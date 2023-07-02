@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Uranus Orbit</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+      body {
+        background-color: #000;
+      }
+      svg {
+        background-color: #000;
+      }
+
+      .orbit {
+        fill: none;
+        stroke: rgb(147, 179, 205);
+        stroke-width: 2;
+      }
+
+      .sun {
+        fill: #fff4b8;
+        stroke: #000;
+        stroke-width: 2;
+      }
+      .uranus {
+        fill: steelblue;
+        stroke: #000;
+        stroke-width: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <svg id="chart"></svg>
+    <script>
+      // Load the Uranus positions from the CSV file
+      d3.csv('uranus_positions.csv').then(function (data) {
+        // Parse the position data
+        data.forEach(function (d) {
+          d.x = parseFloat(d.x);
+          d.y = parseFloat(d.y);
+          d.z = parseFloat(d.z);
+        });
+
+        // Set up the chart dimensions
+        const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+        const width = 600 - margin.left - margin.right;
+        const height = 600 - margin.top - margin.bottom;
+
+        // Create the SVG element
+        const svg = d3
+          .select('#chart')
+          .attr('width', width + margin.left + margin.right)
+          .attr('height', height + margin.top + margin.bottom)
+          .append('g')
+          .attr('transform', `translate(${width / 2}, ${height / 2})`);
+
+        // Create scales for the x and y axes
+        const xScale = d3
+          .scaleLinear()
+          .domain(d3.extent(data, (d) => d.x))
+          .range([-width / 2, width / 2]);
+
+        const yScale = d3
+          .scaleLinear()
+          .domain(d3.extent(data, (d) => d.y))
+          .range([height / 2, -height / 2]);
+
+        // Create the line generator
+        const line = d3
+          .line()
+          .x((d) => xScale(d.x))
+          .y((d) => yScale(d.y));
+
+        // Add the path for the orbit
+        svg
+          .append('path')
+          .datum(data)
+          .attr('class', 'orbit')
+          .attr('d', line);
+
+        // Add the Sun in the center
+        svg
+          .append('circle')
+          .attr('class', 'sun')
+          .attr('cx', 0)
+          .attr('cy', 0)
+          .attr('r', 50);
+
+        // Add the Uranus position
+        const uranus = svg
+          .append('circle')
+          .attr('class', 'uranus')
+          .attr('r', 20);
+
+        // Function to update Uranus' position
+        function updateUranusPosition(index) {
+          const currentPosition = data[index];
+          uranus
+            .transition()
+            // .duration(500)
+            .attr('cx', (d) => xScale(currentPosition.x))
+            .attr('cy', (d) => yScale(currentPosition.y));
+        }
+
+        // Update Uranus' position periodically
+        let currentIndex = 0;
+        setInterval(function () {
+          updateUranusPosition(currentIndex);
+          currentIndex = (currentIndex + 1) % data.length;
+        }, 100);
+      });
+    </script>
+  </body>
+</html>
