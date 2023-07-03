@@ -2,12 +2,6 @@ import ephem
 import numpy as np
 import datetime
 
-# Create an observer for the Sun
-sun_observer = ephem.Observer()
-sun_observer.lat = 0
-sun_observer.lon = 0
-sun_observer.elevation = 0  # Assume observer is at sea level
-
 # Specify the start and end dates for the ephemeris data
 start_date = datetime.datetime(2023, 1, 1)
 end_date = datetime.datetime(2024, 1, 1)
@@ -21,9 +15,11 @@ for date in dates:
     # Compute the position of Uranus for the given date
     uranus = ephem.Uranus()
     uranus.compute(date)
+    sun = ephem.Sun()
+    sun.compute(date)
 
     # Compute the distance between Uranus and the Sun
-    distance = ephem.separation(uranus, sun_observer)
+    distance = ephem.separation(uranus, sun)
 
     # Append the position data to the list
     positions.append([float(uranus.ra), float(uranus.dec), float(distance)])
