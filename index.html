@@ -58,7 +58,7 @@
         // Create scales for the x and y axes
         const xScale = d3
           .scaleLinear()
-          .domain(d3.extent(data, (d) => d.x))
+          .domain(d3.extent(data, (d) => d.z))
           .range([-width / 2, width / 2]);
 
         const yScale = d3
@@ -69,7 +69,7 @@
         // Create the line generator
         const line = d3
           .line()
-          .x((d) => xScale(d.x))
+          .x((d) => xScale(d.z))
           .y((d) => yScale(d.y));
 
         // Add the path for the orbit
@@ -99,7 +99,7 @@
           uranus
             .transition()
             // .duration(500)
-            .attr('cx', (d) => xScale(currentPosition.x))
+            .attr('cx', (d) => xScale(currentPosition.z))
             .attr('cy', (d) => yScale(currentPosition.y));
         }
 
