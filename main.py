@@ -3,7 +3,7 @@ import numpy as np
 import datetime
 
 # Specify the start and end dates for the ephemeris data
-start_date = datetime.datetime(2022, 1, 1)
+start_date = datetime.datetime(1939, 1, 1)
 end_date = datetime.datetime(2023, 1, 1)
 
 dates = [start_date + datetime.timedelta(days=i) for i in range((end_date - start_date).days)]
