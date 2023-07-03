@@ -91,6 +91,8 @@
         const uranus = svg
           .append('circle')
           .attr('class', 'uranus')
+          .attr('cx', (d) => xScale(data[0].z))
+          .attr('cy', (d) => yScale(data[0].y))
           .attr('r', 20);
 
         // Function to update Uranus' position
