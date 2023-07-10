@@ -1,10 +1,10 @@
 :root {
-  --bg-color: rgb(30, 32, 46);
+  --bg-color: rgb(31, 34, 47);
   --orbit-color: rgb(132, 153, 169);
   --uranus-color: rgb(88, 130, 165);
   --sun-color: #fff2aa;
   --white: rgb(223, 223, 223);
-  --purple: rgb(62, 47, 92);
+  --nav-bg: rgb(59, 51, 76);
 }
 
 body {
@@ -19,13 +19,18 @@ body {
 
 nav {
   padding: 3px 5px;
-  background-color: var(--purple);
+  background-color: var(--nav-bg);
 }
 
 
 #chart {
   width: 50%;
   height: 300px;
+}
+
+.chart-container {
+  display: flex;
+  justify-content: center;
 }
 
 .orbit {
