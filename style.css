@@ -4,16 +4,22 @@
   --uranus-color: rgb(88, 130, 165);
   --sun-color: #fff2aa;
   --white: rgb(223, 223, 223);
+  --purple: rgb(62, 47, 92);
 }
 
 body {
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  /* align-items: center; */
   background-color: var(--bg-color);
   height: 100vh;
+  color: var(--white);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.2rem;
+}
+
+nav {
+  padding: 3px 5px;
+  background-color: var(--purple);
 }
 
 
