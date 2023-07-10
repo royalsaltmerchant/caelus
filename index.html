@@ -34,7 +34,7 @@
     <svg id="chart"></svg>
     <script>
       // Load the Uranus positions from the CSV file
-      d3.csv('uranus_positions.csv').then(function (data) {
+      d3.csv("uranus_positions.csv").then(function (data) {
         // Parse the position data
         data.forEach(function (d) {
           d.x = parseFloat(d.x);
@@ -49,11 +49,11 @@
 
         // Create the SVG element
         const svg = d3
-          .select('#chart')
-          .attr('width', width + margin.left + margin.right)
-          .attr('height', height + margin.top + margin.bottom)
-          .append('g')
-          .attr('transform', `translate(${width / 2}, ${height / 2})`);
+          .select("#chart")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
         // Create scales for the x and y axes
         const xScale = d3
@@ -73,42 +73,48 @@
           .y((d) => yScale(d.y));
 
         // Add the path for the orbit
-        svg
-          .append('path')
-          .datum(data)
-          .attr('class', 'orbit')
-          .attr('d', line);
-
-        // Add the Sun in the center
-        svg
-          .append('circle')
-          .attr('class', 'sun')
-          .attr('cx', 0)
-          .attr('cy', 0)
-          .attr('r', 50);
+       const orbitPath = svg.append("path").datum(data).attr("class", "orbit").attr("d", line);
 
         // Add the Uranus position
         const uranus = svg
-          .append('circle')
-          .attr('class', 'uranus')
-          .attr('cx', (d) => xScale(data[0].z))
-          .attr('cy', (d) => yScale(data[0].y))
-          .attr('r', 20);
+          .append("circle")
+          .attr("class", "uranus")
+          .attr("cx", (d) => xScale(data[0].z))
+          .attr("cy", (d) => yScale(data[0].y))
+          .attr("r", 20);
+
+        // Add the Sun in the center
+        const sun = svg
+          .append("circle")
+          .attr("class", "sun")
+          .attr("cx", 0)
+          .attr("cy", 0)
+          .attr("r", 50);
 
         // Function to update Uranus' position
-        function updateUranusPosition(index) {
+        function update(index) {
           const currentPosition = data[index];
           uranus
             .transition()
             // .duration(500)
-            .attr('cx', (d) => xScale(currentPosition.z))
-            .attr('cy', (d) => yScale(currentPosition.y));
+            .attr("cx", (d) => xScale(currentPosition.z))
+            .attr("cy", (d) => yScale(currentPosition.y));
+
+          // Uranus goes behind or in front of the sun
+          if (index === 4000) {
+            uranus.raise();
+          }
+          if (index === 20000) {
+            uranus.lower();
+            // keep the orbit path below
+            orbitPath.lower();
+          }
         }
 
         // Update Uranus' position periodically
         let currentIndex = 0;
         setInterval(function () {
-          updateUranusPosition(currentIndex);
+          update(currentIndex);
           currentIndex = (currentIndex + 100) % data.length;
         }, 100);
       });
