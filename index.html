@@ -6,10 +6,19 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
       body {
-        background-color: #000;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        /* align-items: center; */
+        background-color: rgb(30, 32, 46);
+        height: 100vh;
       }
-      svg {
-        background-color: #000;
+
+      
+      #chart {
+        width: 50%;
+        height: 300px;
       }
 
       .orbit {
@@ -19,13 +28,14 @@
       }
 
       .sun {
-        fill: #fff4b8;
-        stroke: #000;
+        fill: #fff2aa;
+        stroke: whitesmoke;
         stroke-width: 2;
       }
+
       .uranus {
-        fill: steelblue;
-        stroke: #000;
+        fill: rgb(88, 130, 165);
+        stroke: whitesmoke;
         stroke-width: 2;
       }
     </style>
@@ -42,29 +52,30 @@
           d.z = parseFloat(d.z);
         });
 
+        // Create the SVG element
+        const svg = d3.select("#chart");
+
         // Set up the chart dimensions
         const margin = { top: 20, right: 20, bottom: 20, left: 20 };
-        const width = 600 - margin.left - margin.right;
-        const height = 600 - margin.top - margin.bottom;
+        let width = svg.node().getBoundingClientRect().width;
+        let height = svg.node().getBoundingClientRect().height;
 
-        // Create the SVG element
-        const svg = d3
-          .select("#chart")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
+        // Create the chart container
+        const chart = svg
           .append("g")
           .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
         // Create scales for the x and y axes
+        const scalePadding = 100;
         const xScale = d3
           .scaleLinear()
           .domain(d3.extent(data, (d) => d.z))
-          .range([-width / 2, width / 2]);
+          .range([(-width + scalePadding) / 2, (width - scalePadding) / 2]);
 
         const yScale = d3
           .scaleLinear()
           .domain(d3.extent(data, (d) => d.y))
-          .range([height / 2, -height / 2]);
+          .range([(height - scalePadding) / 2, (-height + scalePadding) / 2]);
 
         // Create the line generator
         const line = d3
@@ -73,25 +84,30 @@
           .y((d) => yScale(d.y));
 
         // Add the path for the orbit
-       const orbitPath = svg.append("path").datum(data).attr("class", "orbit").attr("d", line);
+        const orbitPath = chart
+          .append("path")
+          .datum(data)
+          .attr("class", "orbit")
+          .attr("d", line);
 
         // Add the Uranus position
-        const uranus = svg
+        const uranus = chart
           .append("circle")
           .attr("class", "uranus")
           .attr("cx", (d) => xScale(data[0].z))
           .attr("cy", (d) => yScale(data[0].y))
-          .attr("r", 20);
+          .attr("r", 15);
 
         // Add the Sun in the center
-        const sun = svg
+        const sun = chart
           .append("circle")
           .attr("class", "sun")
           .attr("cx", 0)
           .attr("cy", 0)
-          .attr("r", 50);
+          .attr("r", 30);
 
         // Function to update Uranus' position
+        let uranusRaise = false;
         function update(index) {
           const currentPosition = data[index];
           uranus
@@ -99,15 +115,21 @@
             // .duration(500)
             .attr("cx", (d) => xScale(currentPosition.z))
             .attr("cy", (d) => yScale(currentPosition.y));
-
+          
+          // console.log(index)
           // Uranus goes behind or in front of the sun
-          if (index === 4000) {
+          if (index > 4000 && index < 5000 && !uranusRaise) {
+            // console.log("RAISE")
             uranus.raise();
+            uranusRaise = true;
           }
-          if (index === 20000) {
+          if (index > 20000 && uranusRaise) {
+            // console.log("LOWER")
             uranus.lower();
+            uranusRaise = false;
             // keep the orbit path below
             orbitPath.lower();
+            
           }
         }
 
@@ -117,6 +139,22 @@
           update(currentIndex);
           currentIndex = (currentIndex + 100) % data.length;
         }, 100);
+
+        // Update chart dimensions on window resize
+        function resizeChart() {
+          width = svg.node().getBoundingClientRect().width;
+          height = svg.node().getBoundingClientRect().height;
+
+          chart.attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+          xScale.range([(-width + scalePadding) / 2, (width - scalePadding) / 2]);
+          yScale.range([(height - scalePadding) / 2, (-height + scalePadding) / 2]);
+
+          orbitPath.attr("d", line);
+          uranus.attr("cx", (d) => xScale(data[currentIndex].z)).attr("cy", (d) => yScale(data[currentIndex].y));
+        }
+
+        window.addEventListener("resize", resizeChart);
       });
     </script>
   </body>
