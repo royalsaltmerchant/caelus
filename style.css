@@ -11,7 +11,7 @@ body {
   margin: 0;
   padding: 0;
   background-color: var(--bg-color);
-  height: 100vh;
+  /* height: 100vh; */
   color: var(--white);
   font-family: 'Courier New', Courier, monospace;
   font-size: 1.2rem;
